@@ -10,6 +10,10 @@ namespace Pacman
         private SpriteBatch _spriteBatch;
         private ShapeBatcher _shapeBatcher;
 
+        private Blinky Blinky;
+        private Pinky Pinky;
+        private Inky Inky;
+        private Clyde Clyde;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -20,6 +24,10 @@ namespace Pacman
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            Blinky = new Blinky(new Vector2(100, 100));
+            Pinky = new Pinky(new Vector2(200, 100));
+            Inky = new Inky(new Vector2(300, 100));
+            Clyde = new Clyde(new Vector2(400, 100));
 
             base.Initialize();
         }
@@ -49,18 +57,10 @@ namespace Pacman
 
             // TODO: Add your drawing code here
             _shapeBatcher.Begin();
-            
-            _shapeBatcher.DrawCircle(new Vector2(175, 250), 25, 16, Color.Red);
-            _shapeBatcher.DrawRectangle(new Vector2(150, 225), 25, 50, Color.Red);
-            _shapeBatcher.DrawCircle(new Vector2(155, 227), 5, 3, Color.CornflowerBlue);
-            _shapeBatcher.DrawCircle(new Vector2(165, 227), 5, 3, Color.CornflowerBlue);
-            _shapeBatcher.DrawCircle(new Vector2(175, 227), 5, 3, Color.CornflowerBlue);
-            _shapeBatcher.DrawCircle(new Vector2(185, 227), 5, 3, Color.CornflowerBlue);
-            _shapeBatcher.DrawCircle(new Vector2(195, 227), 5, 3, Color.CornflowerBlue);
-            _shapeBatcher.DrawCircle(new Vector2(165, 255), 7, 10, Color.White);
-            _shapeBatcher.DrawCircle(new Vector2(185, 255), 7, 10, Color.White);
-            _shapeBatcher.DrawCircle(new Vector2(170, 255), 3.5f, 10, Color.DarkBlue);
-            _shapeBatcher.DrawCircle(new Vector2(190, 255), 3.5f, 10, Color.DarkBlue);
+            Blinky.Draw(_shapeBatcher);
+            Pinky.Draw(_shapeBatcher);
+            Inky.Draw(_shapeBatcher);
+            Clyde.Draw(_shapeBatcher);
             _shapeBatcher.End();
 
             base.Draw(gameTime);
