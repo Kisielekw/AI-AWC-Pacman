@@ -104,12 +104,20 @@ namespace Pacman
             }
         }
 
-        public void DrawRectangle(Vector2 pPosition, Vector2 pOffset, float pHeight, float pWidth, Color pColour)
+        public void DrawRectangle(Vector2 pPosition, bool pCentred, float pHeight, float pWidth, Color pColour)
         {
-            Vector3 vecA = new Vector3(pPosition, 0) - new Vector3(pOffset, 0);
-            Vector3 vecB = new Vector3(pPosition.X, pPosition.Y + pHeight, 0) - new Vector3(pOffset, 0);
-            Vector3 vecC = new Vector3(pPosition.X + pWidth, pPosition.Y + pHeight, 0) - new Vector3(pOffset, 0);
-            Vector3 vecD = new Vector3(pPosition.X + pWidth, pPosition.Y, 0) - new Vector3(pOffset, 0);
+            Vector3 vecA = new Vector3(pPosition, 0);
+            Vector3 vecB = new Vector3(pPosition.X, pPosition.Y + pHeight, 0);
+            Vector3 vecC = new Vector3(pPosition.X + pWidth, pPosition.Y + pHeight, 0);
+            Vector3 vecD = new Vector3(pPosition.X + pWidth, pPosition.Y, 0);
+
+            if (pCentred)
+            {
+                vecA -= new Vector3(pWidth / 2, pHeight / 2, 0);
+                vecB -= new Vector3(pWidth / 2, pHeight / 2, 0);
+                vecC -= new Vector3(pWidth / 2, pHeight / 2, 0);
+                vecD -= new Vector3(pWidth / 2, pHeight / 2, 0);
+            }
 
             VertexPositionColor a = new VertexPositionColor(vecA, pColour);
             VertexPositionColor b = new VertexPositionColor(vecB, pColour);
