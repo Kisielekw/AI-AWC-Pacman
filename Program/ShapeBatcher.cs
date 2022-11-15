@@ -104,12 +104,12 @@ namespace Pacman
             }
         }
 
-        public void DrawRectangle(Vector2 pPosition, float pHeight, float pWidth, Color pColour)
+        public void DrawRectangle(Vector2 pPosition, Vector2 pOffset, float pHeight, float pWidth, Color pColour)
         {
-            Vector3 vecA = new Vector3(pPosition, 0);
-            Vector3 vecB = new Vector3(pPosition.X, pPosition.Y + pHeight, 0);
-            Vector3 vecC = new Vector3(pPosition.X + pWidth, pPosition.Y + pHeight, 0);
-            Vector3 vecD = new Vector3(pPosition.X + pWidth, pPosition.Y, 0);
+            Vector3 vecA = new Vector3(pPosition, 0) - new Vector3(pOffset, 0);
+            Vector3 vecB = new Vector3(pPosition.X, pPosition.Y + pHeight, 0) - new Vector3(pOffset, 0);
+            Vector3 vecC = new Vector3(pPosition.X + pWidth, pPosition.Y + pHeight, 0) - new Vector3(pOffset, 0);
+            Vector3 vecD = new Vector3(pPosition.X + pWidth, pPosition.Y, 0) - new Vector3(pOffset, 0);
 
             VertexPositionColor a = new VertexPositionColor(vecA, pColour);
             VertexPositionColor b = new VertexPositionColor(vecB, pColour);
