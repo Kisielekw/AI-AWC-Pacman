@@ -106,6 +106,8 @@ namespace Pacman
 
         public void DrawRectangle(Vector2 pPosition, bool pCentred, float pHeight, float pWidth, Color pColour)
         {
+            EnsureSpace(4, 6);
+
             Vector3 vecA = new Vector3(pPosition, 0);
             Vector3 vecB = new Vector3(pPosition.X, pPosition.Y + pHeight, 0);
             Vector3 vecC = new Vector3(pPosition.X + pWidth, pPosition.Y + pHeight, 0);
@@ -141,6 +143,8 @@ namespace Pacman
 
         public void DrawCircle(Vector2 pPosition, float pRadius, int pSides, Color pColour)
         {
+            EnsureSpace(1 + 2 * pSides, 3 * pSides);
+
             float deltaAngle = MathF.PI * 2 / pSides;
             float angle = 0;
 
