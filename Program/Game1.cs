@@ -10,6 +10,8 @@ namespace Pacman
         private SpriteBatch _spriteBatch;
         private ShapeBatcher _shapeBatcher;
 
+        private Pacman Pacman;
+
         private Blinky Blinky;
         private Pinky Pinky;
         private Inky Inky;
@@ -27,9 +29,9 @@ namespace Pacman
         {
             // TODO: Add your initialization logic here
             backgroundColour = Color.Black;
-            Pinky = new Pinky(new Vector2(200, 100));
-            Inky = new Inky(new Vector2(300, 100));
-            Clyde = new Clyde(new Vector2(400, 100));
+
+            Pacman = new Pacman(new Vector2(100, 200));
+
             Blinky = new Blinky(new Vector2(100, 100), backgroundColour);
             Pinky = new Pinky(new Vector2(200, 100), backgroundColour);
             Inky = new Inky(new Vector2(300, 100), backgroundColour);
@@ -53,6 +55,7 @@ namespace Pacman
                 Exit();
 
             // TODO: Add your update logic here
+            Pacman.Update();
 
             base.Update(gameTime);
         }
@@ -67,6 +70,9 @@ namespace Pacman
             Pinky.Draw(_shapeBatcher);
             Inky.Draw(_shapeBatcher);
             Clyde.Draw(_shapeBatcher);
+
+            Pacman.Draw(_shapeBatcher);
+
             _shapeBatcher.End();
 
             base.Draw(gameTime);
