@@ -14,6 +14,8 @@ namespace Pacman
         private Pinky Pinky;
         private Inky Inky;
         private Clyde Clyde;
+
+        private Color backgroundColour;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -24,10 +26,14 @@ namespace Pacman
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            Blinky = new Blinky(new Vector2(100, 100));
+            backgroundColour = Color.Black;
             Pinky = new Pinky(new Vector2(200, 100));
             Inky = new Inky(new Vector2(300, 100));
             Clyde = new Clyde(new Vector2(400, 100));
+            Blinky = new Blinky(new Vector2(100, 100), backgroundColour);
+            Pinky = new Pinky(new Vector2(200, 100), backgroundColour);
+            Inky = new Inky(new Vector2(300, 100), backgroundColour);
+            Clyde = new Clyde(new Vector2(400, 100), backgroundColour);
 
             base.Initialize();
         }
@@ -53,7 +59,7 @@ namespace Pacman
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(backgroundColour);
 
             // TODO: Add your drawing code here
             _shapeBatcher.Begin();
