@@ -13,8 +13,9 @@ namespace Pacman
         public Vector2 Position { get; protected set; }
 
         protected Color colour;
+        protected Color backgroundColour;
 
-        public Ghost(Vector2 pPosition)
+        public Ghost(Vector2 pPosition, Color pBackgroundColour)
         {
             Position = pPosition;
         }
@@ -23,11 +24,11 @@ namespace Pacman
         {
             pShapeBatcher.DrawCircle(new Vector2(0, 12.5f) + Position, 25, 16, colour);
             pShapeBatcher.DrawRectangle(Position, true, 25, 50, colour);
-            pShapeBatcher.DrawCircle(new Vector2(-20, -9.5f) + Position, 5, 3, Color.CornflowerBlue);
-            pShapeBatcher.DrawCircle(new Vector2(-10, -9.5f) + Position, 5, 3, Color.CornflowerBlue);
-            pShapeBatcher.DrawCircle(new Vector2(0, -9.5f) + Position, 5, 3, Color.CornflowerBlue);
-            pShapeBatcher.DrawCircle(new Vector2(10, -9.5f) + Position, 5, 3, Color.CornflowerBlue);
-            pShapeBatcher.DrawCircle(new Vector2(20, -9.5f) + Position, 5, 3, Color.CornflowerBlue);
+            pShapeBatcher.DrawCircle(new Vector2(-20, -9.5f) + Position, 5, 3, backgroundColour);
+            pShapeBatcher.DrawCircle(new Vector2(-10, -9.5f) + Position, 5, 3, backgroundColour);
+            pShapeBatcher.DrawCircle(new Vector2(0, -9.5f) + Position, 5, 3, backgroundColour);
+            pShapeBatcher.DrawCircle(new Vector2(10, -9.5f) + Position, 5, 3, backgroundColour);
+            pShapeBatcher.DrawCircle(new Vector2(20, -9.5f) + Position, 5, 3, backgroundColour);
             pShapeBatcher.DrawCircle(new Vector2(-10, 17.5f) + Position, 7, 10, Color.White);
             pShapeBatcher.DrawCircle(new Vector2(10, 17.5f) + Position, 7, 10, Color.White);
             pShapeBatcher.DrawCircle(new Vector2(-5, 17.5f) + Position, 3.5f, 10, Color.DarkBlue);
@@ -37,7 +38,7 @@ namespace Pacman
 
     internal class Blinky : Ghost
     {
-        public Blinky(Vector2 pPosition) : base(pPosition)
+        public Blinky(Vector2 pPosition, Color pBackgroundColour) : base(pPosition, pBackgroundColour)
         {
             Name = "Blinky";
             colour = Color.Red;
@@ -46,7 +47,7 @@ namespace Pacman
 
     internal class Pinky : Ghost
     {
-        public Pinky(Vector2 pPosition) : base(pPosition)
+        public Pinky(Vector2 pPosition, Color pBackgroundColour) : base(pPosition, pBackgroundColour)
         {
             Name = "Pinky";
             colour = Color.Pink;
@@ -55,7 +56,7 @@ namespace Pacman
 
     internal class Inky : Ghost
     {
-        public Inky(Vector2 pPosition) : base(pPosition)
+        public Inky(Vector2 pPosition, Color pBackgroundColour) : base(pPosition, pBackgroundColour)
         {
             Name = "Inky";
             colour = Color.LightBlue;
@@ -64,7 +65,7 @@ namespace Pacman
 
     internal class Clyde : Ghost
     {
-        public Clyde(Vector2 pPosition) : base(pPosition)
+        public Clyde(Vector2 pPosition, Color pBackgroundColour) : base(pPosition, pBackgroundColour)
         {
             Name = "Clyde";
             colour = Color.Orange;
