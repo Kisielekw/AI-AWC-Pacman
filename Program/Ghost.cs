@@ -58,7 +58,7 @@ namespace Pacman
                     Escape(pSeconds, pPacman);
                     break;
             }
-    }
+        }
 
         abstract protected void House(float pSeconds);
         abstract protected void Corner(float pSeconds);
@@ -116,7 +116,7 @@ namespace Pacman
         protected override void Escape(float pSeconds, Pacman pPacman)
         {
             throw new NotImplementedException();
-    }
+        }
 
         protected override void House(float pSeconds)
         {

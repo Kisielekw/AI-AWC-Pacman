@@ -32,28 +32,7 @@ namespace Pacman
 
         public void Update()
         {
-            KeyboardState state = Keyboard.GetState();
-
-            if (state.IsKeyDown(Keys.W) && !oldState.IsKeyDown(Keys.W))
-            {
-                direction = new Vector2(0, 1);
-            }
-            if (state.IsKeyDown(Keys.S) && !oldState.IsKeyDown(Keys.S))
-            {
-                direction = new Vector2(0, -1);
-            }
-            if (state.IsKeyDown(Keys.D) && !oldState.IsKeyDown(Keys.D))
-            {
-                direction = new Vector2(1, 0);
-            }
-            if (state.IsKeyDown(Keys.A) && !oldState.IsKeyDown(Keys.A))
-            {
-                direction = new Vector2(-1, 0);
-            }
-
-            Position += direction * speed;
-
-            oldState = state;
+            
         }
     }
 }
