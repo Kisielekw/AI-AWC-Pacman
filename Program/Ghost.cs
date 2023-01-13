@@ -44,29 +44,29 @@ namespace Pacman
             pShapeBatcher.DrawCircle(new Vector2(15, 5) + Position, 3.5f, 10, Color.DarkBlue);
         }
 
-        public void Update(Pacman pPacman, float pSeconds)
+        public void Update(Pacman pPacman, Graph pGraph, float pSeconds)
         {
             switch (state)
             {
                 case States.House:
-                    House(pSeconds);
+                    House(pSeconds, pGraph);
                     break;
                 case States.Corner:
-                    Corner(pSeconds);
+                    Corner(pSeconds, pGraph);
                     break;
                 case States.Chase:
-                    Chase(pSeconds, pPacman);
+                    Chase(pSeconds, pPacman, pGraph);
                     break;
                 case States.Escape:
-                    Escape(pSeconds, pPacman);
+                    Escape(pSeconds, pPacman, pGraph);
                     break;
             }
         }
 
-        abstract protected void House(float pSeconds);
-        abstract protected void Corner(float pSeconds);
-        abstract protected void Chase(float pSeconds, Pacman pPacman);
-        abstract protected void Escape(float pSeconds, Pacman pPacman);
+        abstract protected void House(float pSeconds, Graph pGraph);
+        abstract protected void Corner(float pSeconds, Graph pGraph);
+        abstract protected void Chase(float pSeconds, Pacman pPacman, Graph pGraph);
+        abstract protected void Escape(float pSeconds, Pacman pPacman, Graph pGraph);
     }
 
     internal class Blinky : Ghost
@@ -77,24 +77,40 @@ namespace Pacman
             colour = Color.Red;
         }
 
-        protected override void Chase(float pSeconds, Pacman pPacman)
+        protected override void Chase(float pSeconds, Pacman pPacman, Graph pGraph)
         {
             throw new NotImplementedException();
         }
 
-        protected override void Corner(float pSeconds)
+        protected override void Corner(float pSeconds, Graph pGraph)
         {
             throw new NotImplementedException();
         }
 
-        protected override void Escape(float pSeconds, Pacman pPacman)
+        protected override void Escape(float pSeconds, Pacman pPacman, Graph pGraph)
         {
             throw new NotImplementedException();
         }
 
-        protected override void House(float pSeconds)
+        protected override void House(float pSeconds, Graph pGraph)
         {
-            throw new NotImplementedException();
+            //state = States.Corner;
+            int currentNodeID = pGraph.GetClosesNodeID(Position);
+            AStar pathFinding = new AStar(pGraph, currentNodeID, 0);
+
+            List<Edge> path = pathFinding.ShortestPath;
+
+            if (pGraph.GetNode(path[0].ToID).Position == Position)
+            {
+                path.RemoveAt(0);
+            }
+            else
+            {
+                Vector2 direction = (pGraph.GetNode(path[0].ToID).Position - Position);
+                direction.Normalize();
+
+                Position += direction * 0.1f;
+            }
         }
     }
 
@@ -106,22 +122,22 @@ namespace Pacman
             colour = Color.Pink;
         }
 
-        protected override void Chase(float pSeconds, Pacman pPacman)
+        protected override void Chase(float pSeconds, Pacman pPacman, Graph pGraph)
         {
             throw new NotImplementedException();
         }
 
-        protected override void Corner(float pSeconds)
+        protected override void Corner(float pSeconds, Graph pGraph)
         {
             throw new NotImplementedException();
         }
 
-        protected override void Escape(float pSeconds, Pacman pPacman)
+        protected override void Escape(float pSeconds, Pacman pPacman, Graph pGraph)
         {
             throw new NotImplementedException();
         }
 
-        protected override void House(float pSeconds)
+        protected override void House(float pSeconds, Graph pGraph)
         {
             if(houseStartTime + 2 >= pSeconds) state = States.Corner;
         }
@@ -135,22 +151,22 @@ namespace Pacman
             colour = Color.LightBlue;
         }
 
-        protected override void Chase(float pSeconds, Pacman pPacman)
+        protected override void Chase(float pSeconds, Pacman pPacman, Graph pGraph)
         {
             throw new NotImplementedException();
         }
 
-        protected override void Corner(float pSeconds)
+        protected override void Corner(float pSeconds, Graph pGraph)
         {
             throw new NotImplementedException();
         }
 
-        protected override void Escape(float pSeconds, Pacman pPacman)
+        protected override void Escape(float pSeconds, Pacman pPacman, Graph pGraph)
         {
             throw new NotImplementedException();
         }
 
-        protected override void House(float pSeconds)
+        protected override void House(float pSeconds, Graph pGraph)
         {
             if(houseStartTime + 5 >= pSeconds) state = States.Corner;
         }
@@ -164,22 +180,22 @@ namespace Pacman
             colour = Color.Orange;
         }
 
-        protected override void Chase(float pSeconds, Pacman pPacman)
+        protected override void Chase(float pSeconds, Pacman pPacman, Graph pGraph)
         {
             throw new NotImplementedException();
         }
 
-        protected override void Corner(float pSeconds)
+        protected override void Corner(float pSeconds, Graph pGraph)
         {
             throw new NotImplementedException();
         }
 
-        protected override void Escape(float pSeconds, Pacman pPacman)
+        protected override void Escape(float pSeconds, Pacman pPacman, Graph pGraph)
         {
             throw new NotImplementedException();
         }
 
-        protected override void House(float pSeconds)
+        protected override void House(float pSeconds, Graph pGraph)
         {
             if(houseStartTime + 8 >= pSeconds) state = States.Corner;
         }

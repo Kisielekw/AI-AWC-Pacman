@@ -62,6 +62,20 @@ namespace Pacman
             return null;
         }
 
+        public int GetClosesNodeID(Vector2 pPosition)
+        {
+            Node closest = nodes[0];
+            foreach(Node node in nodes)
+            {
+                if((pPosition - node.Position).Length() < (pPosition - closest.Position).Length())
+                {
+                    closest = node;
+                }
+            }
+
+            return closest.ID;
+        }
+
         public void AddNode(Vector2 pPosition)
         {
             nodes.Add(new Node(pPosition));
