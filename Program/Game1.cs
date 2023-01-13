@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
 
 namespace Pacman
 {
@@ -31,6 +32,9 @@ namespace Pacman
         {
             // TODO: Add your initialization logic here
             backgroundColour = Color.Black;
+            _graphics.PreferredBackBufferHeight = 950;
+            _graphics.PreferredBackBufferWidth = 950;
+            _graphics.ApplyChanges();
 
             walls = new List<Wall>();
             InitializeWalls();
@@ -71,12 +75,12 @@ namespace Pacman
 
             // TODO: Add your drawing code here
             _shapeBatcher.Begin();
-            Blinky.Draw(_shapeBatcher);
-            Pinky.Draw(_shapeBatcher);
-            Inky.Draw(_shapeBatcher);
-            Clyde.Draw(_shapeBatcher);
+            //Blinky.Draw(_shapeBatcher);
+            //Pinky.Draw(_shapeBatcher);
+            //Inky.Draw(_shapeBatcher);
+            //Clyde.Draw(_shapeBatcher);
 
-            Pacman.Draw(_shapeBatcher);
+            //Pacman.Draw(_shapeBatcher);
 
             foreach(Wall wall in walls)
             {
@@ -237,129 +241,7 @@ namespace Pacman
             walls.Add(new Wall(new Vector2(675, 725)));
         }
 
-            Walls.Add(new Wall(new Vector2(75, 425)));
-            Walls.Add(new Wall(new Vector2(125, 425)));
-            Walls.Add(new Wall(new Vector2(175, 425)));
-            Walls.Add(new Wall(new Vector2(875, 425)));
-            Walls.Add(new Wall(new Vector2(825, 425)));
-            Walls.Add(new Wall(new Vector2(775, 425)));
-
-            Walls.Add(new Wall(new Vector2(75, 525)));
-            Walls.Add(new Wall(new Vector2(125, 525)));
-            Walls.Add(new Wall(new Vector2(175, 525)));
-            Walls.Add(new Wall(new Vector2(875, 525)));
-            Walls.Add(new Wall(new Vector2(825, 525)));
-            Walls.Add(new Wall(new Vector2(775, 525)));
-
-            Walls.Add(new Wall(new Vector2(125, 125)));
-            Walls.Add(new Wall(new Vector2(175, 125)));
-            Walls.Add(new Wall(new Vector2(225, 125)));
-            Walls.Add(new Wall(new Vector2(275, 125)));
-            Walls.Add(new Wall(new Vector2(325, 125)));
-            Walls.Add(new Wall(new Vector2(375, 125)));
-            Walls.Add(new Wall(new Vector2(825, 125)));
-            Walls.Add(new Wall(new Vector2(775, 125)));
-            Walls.Add(new Wall(new Vector2(725, 125)));
-            Walls.Add(new Wall(new Vector2(675, 125)));
-            Walls.Add(new Wall(new Vector2(625, 125)));
-            Walls.Add(new Wall(new Vector2(575, 125)));
-
-            Walls.Add(new Wall(new Vector2(275, 175)));
-            Walls.Add(new Wall(new Vector2(275, 225)));
-            Walls.Add(new Wall(new Vector2(675, 175)));
-            Walls.Add(new Wall(new Vector2(675, 225)));
-
-            Walls.Add(new Wall(new Vector2(175, 225)));
-            Walls.Add(new Wall(new Vector2(175, 275)));
-            Walls.Add(new Wall(new Vector2(175, 325)));
-            Walls.Add(new Wall(new Vector2(125, 325)));
-            Walls.Add(new Wall(new Vector2(775, 225)));
-            Walls.Add(new Wall(new Vector2(775, 275)));
-            Walls.Add(new Wall(new Vector2(775, 325)));
-            Walls.Add(new Wall(new Vector2(825, 325)));
-
-            Walls.Add(new Wall(new Vector2(275, 325)));
-            Walls.Add(new Wall(new Vector2(325, 325)));
-            Walls.Add(new Wall(new Vector2(375, 325)));
-            Walls.Add(new Wall(new Vector2(675, 325)));
-            Walls.Add(new Wall(new Vector2(625, 325)));
-            Walls.Add(new Wall(new Vector2(575, 325)));
-
-            Walls.Add(new Wall(new Vector2(475, 125)));
-            Walls.Add(new Wall(new Vector2(475, 175)));
-            Walls.Add(new Wall(new Vector2(475, 225)));
-            Walls.Add(new Wall(new Vector2(425, 225)));
-            Walls.Add(new Wall(new Vector2(375, 225)));
-            Walls.Add(new Wall(new Vector2(525, 225)));
-            Walls.Add(new Wall(new Vector2(575, 225)));
-
-            Walls.Add(new Wall(new Vector2(475, 325)));
-            Walls.Add(new Wall(new Vector2(475, 375)));
-            Walls.Add(new Wall(new Vector2(475, 425)));
-            Walls.Add(new Wall(new Vector2(425, 425)));
-            Walls.Add(new Wall(new Vector2(375, 425)));
-            Walls.Add(new Wall(new Vector2(525, 425)));
-            Walls.Add(new Wall(new Vector2(575, 425)));
-            Walls.Add(new Wall(new Vector2(375, 475)));
-            Walls.Add(new Wall(new Vector2(375, 525)));
-            Walls.Add(new Wall(new Vector2(575, 475)));
-            Walls.Add(new Wall(new Vector2(575, 525)));
-            Walls.Add(new Wall(new Vector2(525, 525)));
-            Walls.Add(new Wall(new Vector2(425, 525)));
-
-            Walls.Add(new Wall(new Vector2(275, 425)));
-            Walls.Add(new Wall(new Vector2(275, 475)));
-            Walls.Add(new Wall(new Vector2(275, 525)));
-            Walls.Add(new Wall(new Vector2(675, 425)));
-            Walls.Add(new Wall(new Vector2(675, 475)));
-            Walls.Add(new Wall(new Vector2(675, 525)));
-
-            Walls.Add(new Wall(new Vector2(475, 875)));
-            Walls.Add(new Wall(new Vector2(475, 825)));
-            Walls.Add(new Wall(new Vector2(475, 775)));
-
-            Walls.Add(new Wall(new Vector2(125, 825)));
-            Walls.Add(new Wall(new Vector2(175, 825)));
-            Walls.Add(new Wall(new Vector2(825, 825)));
-            Walls.Add(new Wall(new Vector2(775, 825)));
-
-            Walls.Add(new Wall(new Vector2(275, 825)));
-            Walls.Add(new Wall(new Vector2(325, 825)));
-            Walls.Add(new Wall(new Vector2(375, 825)));
-            Walls.Add(new Wall(new Vector2(675, 825)));
-            Walls.Add(new Wall(new Vector2(625, 825)));
-            Walls.Add(new Wall(new Vector2(575, 825)));
-
-            Walls.Add(new Wall(new Vector2(125, 725)));
-            Walls.Add(new Wall(new Vector2(175, 725)));
-            Walls.Add(new Wall(new Vector2(125, 675)));
-            Walls.Add(new Wall(new Vector2(125, 625)));
-
-            Walls.Add(new Wall(new Vector2(825, 725)));
-            Walls.Add(new Wall(new Vector2(775, 725)));
-            Walls.Add(new Wall(new Vector2(825, 675)));
-            Walls.Add(new Wall(new Vector2(825, 625)));
-
-            Walls.Add(new Wall(new Vector2(225, 625)));
-            Walls.Add(new Wall(new Vector2(275, 625)));
-            Walls.Add(new Wall(new Vector2(325, 625)));
-            Walls.Add(new Wall(new Vector2(275, 675)));
-            Walls.Add(new Wall(new Vector2(275, 725)));
-
-            Walls.Add(new Wall(new Vector2(375, 725)));
-
-            Walls.Add(new Wall(new Vector2(425, 625)));
-            Walls.Add(new Wall(new Vector2(475, 625)));
-            Walls.Add(new Wall(new Vector2(525, 625)));
-            Walls.Add(new Wall(new Vector2(475, 675)));
-
-            Walls.Add(new Wall(new Vector2(575, 725)));
-
-            Walls.Add(new Wall(new Vector2(625, 625)));
-            Walls.Add(new Wall(new Vector2(675, 625)));
-            Walls.Add(new Wall(new Vector2(725, 625)));
-            Walls.Add(new Wall(new Vector2(675, 675)));
-            Walls.Add(new Wall(new Vector2(675, 725)));
-        }
+            
+        
     }
 }
