@@ -18,27 +18,30 @@ namespace Pacman
         protected Color colour;
         protected Color backgroundColour;
         protected States state;
+        protected float houseStartTime;
+        private float speed;
 
         public Ghost(Vector2 pPosition, Color pBackgroundColour)
         {
             Position = pPosition;
             backgroundColour = pBackgroundColour;
             state = States.House;
+            houseStartTime = 0;
         }
 
         public void Draw(ShapeBatcher pShapeBatcher)
         {
-            pShapeBatcher.DrawCircle(new Vector2(0, 12.5f) + Position, 25, 16, colour);
-            pShapeBatcher.DrawRectangle(Position, true, 25, 50, colour);
-            pShapeBatcher.DrawCircle(new Vector2(-20, -9.5f) + Position, 5, 3, backgroundColour);
-            pShapeBatcher.DrawCircle(new Vector2(-10, -9.5f) + Position, 5, 3, backgroundColour);
-            pShapeBatcher.DrawCircle(new Vector2(0, -9.5f) + Position, 5, 3, backgroundColour);
-            pShapeBatcher.DrawCircle(new Vector2(10, -9.5f) + Position, 5, 3, backgroundColour);
-            pShapeBatcher.DrawCircle(new Vector2(20, -9.5f) + Position, 5, 3, backgroundColour);
-            pShapeBatcher.DrawCircle(new Vector2(-10, 17.5f) + Position, 7, 10, Color.White);
-            pShapeBatcher.DrawCircle(new Vector2(10, 17.5f) + Position, 7, 10, Color.White);
-            pShapeBatcher.DrawCircle(new Vector2(-5, 17.5f) + Position, 3.5f, 10, Color.DarkBlue);
-            pShapeBatcher.DrawCircle(new Vector2(15, 17.5f) + Position, 3.5f, 10, Color.DarkBlue);
+            pShapeBatcher.DrawCircle(Position, 25, 16, colour);
+            pShapeBatcher.DrawRectangle(new Vector2(0, -12.5f) + Position, true, 25, 50, colour);
+            pShapeBatcher.DrawCircle(new Vector2(-20, -23f) + Position, 5, 3, backgroundColour);
+            pShapeBatcher.DrawCircle(new Vector2(-10, -23f) + Position, 5, 3, backgroundColour);
+            pShapeBatcher.DrawCircle(new Vector2(0, -23f) + Position, 5, 3, backgroundColour);
+            pShapeBatcher.DrawCircle(new Vector2(10, -23f) + Position, 5, 3, backgroundColour);
+            pShapeBatcher.DrawCircle(new Vector2(20, -23f) + Position, 5, 3, backgroundColour);
+            pShapeBatcher.DrawCircle(new Vector2(-10, 5) + Position, 7, 10, Color.White);
+            pShapeBatcher.DrawCircle(new Vector2(10, 5) + Position, 7, 10, Color.White);
+            pShapeBatcher.DrawCircle(new Vector2(-5, 5) + Position, 3.5f, 10, Color.DarkBlue);
+            pShapeBatcher.DrawCircle(new Vector2(15, 5) + Position, 3.5f, 10, Color.DarkBlue);
         }
 
         public void Update(Pacman pPacman, float pSeconds)
@@ -120,7 +123,7 @@ namespace Pacman
 
         protected override void House(float pSeconds)
         {
-            throw new NotImplementedException();
+            if(houseStartTime + 2 >= pSeconds) state = States.Corner;
         }
     }
 
@@ -149,7 +152,7 @@ namespace Pacman
 
         protected override void House(float pSeconds)
         {
-            throw new NotImplementedException();
+            if(houseStartTime + 5 >= pSeconds) state = States.Corner;
         }
     }
 
@@ -178,7 +181,7 @@ namespace Pacman
 
         protected override void House(float pSeconds)
         {
-            throw new NotImplementedException();
+            if(houseStartTime + 8 >= pSeconds) state = States.Corner;
         }
     }
 }
