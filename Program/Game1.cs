@@ -39,12 +39,12 @@ namespace Pacman
             walls = new List<Wall>();
             InitializeWalls();
 
-            Pacman = new Pacman(new Vector2(100, 200));
+            Pacman = new Pacman(new Vector2(75, 75));
 
-            Blinky = new Blinky(new Vector2(100, 100), backgroundColour);
-            Pinky = new Pinky(new Vector2(200, 100), backgroundColour);
-            Inky = new Inky(new Vector2(300, 100), backgroundColour);
-            Clyde = new Clyde(new Vector2(400, 100), backgroundColour);
+            Blinky = new Blinky(new Vector2(475, 525), backgroundColour, walls);
+            Pinky = new Pinky(new Vector2(475, 475), backgroundColour, walls);
+            //Inky = new Inky(new Vector2(300, 100), backgroundColour);
+            //Clyde = new Clyde(new Vector2(400, 100), backgroundColour);
 
             base.Initialize();
         }
@@ -64,7 +64,11 @@ namespace Pacman
                 Exit();
 
             // TODO: Add your update logic here
-            Pacman.Update();
+            float seccondsElapst = (float)gameTime.TotalGameTime.TotalSeconds;
+
+            Blinky.Update(Pacman, seccondsElapst);
+            Pinky.Update(Pacman, seccondsElapst);
+            Pacman.Update(walls);
 
             base.Update(gameTime);
         }
@@ -75,12 +79,12 @@ namespace Pacman
 
             // TODO: Add your drawing code here
             _shapeBatcher.Begin();
-            //Blinky.Draw(_shapeBatcher);
-            //Pinky.Draw(_shapeBatcher);
+            Blinky.Draw(_shapeBatcher);
+            Pinky.Draw(_shapeBatcher);
             //Inky.Draw(_shapeBatcher);
             //Clyde.Draw(_shapeBatcher);
 
-            //Pacman.Draw(_shapeBatcher);
+            Pacman.Draw(_shapeBatcher);
 
             foreach(Wall wall in walls)
             {

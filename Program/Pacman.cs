@@ -13,8 +13,39 @@ namespace Pacman
     internal class Pacman
     {
         public Vector2 Position { get; private set; }
+        public Vector2 ClosestNodePosition
+        {
+            get
+            {
+                float x = Position.X + 25;
+                float y = Position.Y + 25;
 
-        private Vector2 direction;
+                x = x % 50;
+                y = y % 50;
+
+                if(x >= 25)
+                {
+                    x = Position.X + (50 - x);
+                }
+                else
+                {
+                    x = Position.X - x;
+                }
+
+                if (y >= 25)
+                {
+                    y = Position.Y + (50 - y);
+                }
+                else
+                {
+                    y = Position.Y - y;
+                }
+
+                return new Vector2(x, y);
+            }
+        }
+        public Vector2 direction { get; private set; }
+       
         private float speed;
 
         private KeyboardState oldState;
@@ -30,9 +61,40 @@ namespace Pacman
             pShapeBatcher.DrawCircle(Position, 25, 16, Color.Gold);
         }
 
-        public void Update()
+        public void Update(List<Wall> pWalls)
         {
-            
+            KeyboardState state = Keyboard.GetState();
+
+            float x = Position.X % 50;
+            float y = Position.Y % 50;
+
+            if(state.IsKeyDown(Keys.W) && !oldState.IsKeyDown(Keys.W))
+            {
+                direction = new Vector2(0, 1);
+                Position = new Vector2(ClosestNodePosition.X, Position.Y);
+            }
+            else if (state.IsKeyDown(Keys.S) && !oldState.IsKeyDown(Keys.S))
+            {
+                direction = new Vector2(0, -1);
+                Position = new Vector2(ClosestNodePosition.X, Position.Y);
+            }
+            else if (state.IsKeyDown(Keys.A) && !oldState.IsKeyDown(Keys.A))
+            {
+                direction = new Vector2(-1, 0);
+                Position = new Vector2(Position.X, ClosestNodePosition.Y);
+            }
+            else if (state.IsKeyDown(Keys.D) && !oldState.IsKeyDown(Keys.D))
+            {
+                direction = new Vector2(1, 0);
+                Position = new Vector2(Position.X, ClosestNodePosition.Y);
+            }
+
+            if(pWalls.Where(x => x.Position == Position + (direction * 50)).Count() == 0)
+            {
+                Position += direction * 2.5f;
+            }
+
+            oldState = Keyboard.GetState();
         }
     }
 }
