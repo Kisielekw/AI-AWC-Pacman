@@ -76,7 +76,7 @@ namespace Pacman
         }
 
         abstract protected void House(float pSeconds);
-        private void ToCorner(float pSeconds)
+        protected virtual void ToCorner(float pSeconds)
         {
             if (pathFinding.Path[pathCount] == Position)
             {
@@ -140,6 +140,7 @@ namespace Pacman
                     state = States.ToCorner;
                     startTime = pSeconds;
                     pathFinding.CreatePath(Position, new Vector2(875, 875), walls);
+                    pathCount = 0;
                     return;
                 }
                 else pathFinding.CreatePath(Position, pPacman.ClosestNodePosition, walls);
@@ -224,13 +225,13 @@ namespace Pacman
                     state = States.ToCorner;
                     startTime = pSeconds;
                     pathFinding.CreatePath(Position, new Vector2(75, 875), walls);
+                    pathCount = 0;
                     return;
                 }
-                else
-                {
-                    if(AStar)
-                    pathFinding.CreatePath(Position, pPacman.ClosestNodePosition, walls);
-                }
+
+                if (!AStar.CheckCorectValues(Position, target, walls)) target = pPacman.ClosestNodePosition;
+                if ((pPacman.ClosestNodePosition - Position).Length() < 150) target = pPacman.ClosestNodePosition;
+                pathFinding.CreatePath(Position, target, walls);
             }
 
             Vector2 direction = pathFinding.Path[1] - Position;
@@ -270,7 +271,17 @@ namespace Pacman
 
         protected override void Escape(float pSeconds, Pacman pPacman)
         {
-            throw new NotImplementedException();
+            if ((pPacman.Position - Position).Length() >= 100 && (Position.X + 25) % 50 == 0 && (Position.Y + 25) % 50 == 0)
+            {
+                pathFinding.CreatePath(Position, new Vector2(75, 875), walls);
+            }
+            else if ((Position.X + 25) % 50 == 0 && (Position.Y + 25) % 50 == 0)
+            {
+                Vector2 targetVector = Position - pPacman.Position;
+                targetVector.Normalize();
+                targetVector = (targetVector * 2) + Position;
+
+            }
         }
 
         protected override void House(float pSeconds)
@@ -285,26 +296,98 @@ namespace Pacman
 
         protected override void Reset(float pSeconds)
         {
-            throw new NotImplementedException();
+            if (pathFinding.Path[pathCount] == Position)
+            {
+                pathCount++;
+                if (pathCount == pathFinding.Path.Length)
+                {
+                    state = States.House;
+                    pathCount = 0;
+                    startTime = pSeconds;
+                    return;
+                }
+            }
+
+            Vector2 direction = pathFinding.Path[pathCount] - Position;
+            direction.Normalize();
+
+            Position += direction * (speed * 2);
         }
     }
 
     internal class Inky : Ghost
     {
-        public Inky(Vector2 pPosition, Color pBackgroundColour, List<Wall> pWalls) : base(pPosition, pBackgroundColour, pWalls)
+        private Ghost redGhost;
+
+        public Inky(Vector2 pPosition, Color pBackgroundColour, Blinky pBlinky, List<Wall> pWalls) : base(pPosition, pBackgroundColour, pWalls)
         {
             Name = "Inky";
             colour = Color.LightBlue;
+            redGhost = pBlinky;
         }
 
         protected override void Chase(float pSeconds, Pacman pPacman)
         {
-            throw new NotImplementedException();
+            float x = Position.X + 25;
+            float y = Position.Y + 25;
+
+            Vector2 target = (pPacman.ClosestNodePosition - redGhost.Position);
+            target.Normalize();
+            target = pPacman.ClosestNodePosition + (target * 100);
+
+            if (x % 50 == 0 && y % 50 == 0)
+            {
+                if (startTime + 20 <= pSeconds)
+                {
+                    state = States.ToCorner;
+                    startTime = pSeconds;
+                    pathFinding.CreatePath(Position, new Vector2(75, 875), walls);
+                    pathCount = 0;
+                    return;
+                }
+
+                if (!AStar.CheckCorectValues(Position, target, walls)) target = pPacman.ClosestNodePosition;
+                if((pPacman.Position - Position).Length() < 100) target = pPacman.ClosestNodePosition;
+                pathFinding.CreatePath(Position, target, walls);
+            }
+
+            Vector2 direction = pathFinding.Path[1] - Position;
+            direction.Normalize();
+
+            Position += direction * speed;
         }
 
         protected override void Corner(float pSeconds)
         {
-            throw new NotImplementedException();
+            Vector2[] corrnerPath = new Vector2[8]
+            {
+                new Vector2(725, 275),
+                new Vector2(625, 275),
+                new Vector2(625, 175),
+                new Vector2(525, 175),
+                new Vector2(525, 75),
+                new Vector2(875, 75),
+                new Vector2(875, 175),
+                new Vector2(725, 175),
+            };
+
+            if (startTime + 7 <= pSeconds && (Position.X + 25) % 50 == 0 && (Position.Y + 25) % 50 == 0)
+            {
+                state = States.Chase;
+                startTime = pSeconds;
+                return;
+            }
+
+            if (corrnerPath[pathCount] == Position)
+            {
+                pathCount++;
+                if (pathCount == 8) pathCount = 0;
+            }
+
+            Vector2 direction = corrnerPath[pathCount] - Position;
+            direction.Normalize();
+
+            Position += direction * speed;
         }
 
         protected override void Escape(float pSeconds, Pacman pPacman)
@@ -314,31 +397,108 @@ namespace Pacman
 
         protected override void House(float pSeconds)
         {
-            if(startTime + 5 >= pSeconds) state = States.ToCorner;
+            if(startTime + 5 <= pSeconds)
+            {
+                state = States.ToCorner;
+                pathFinding.CreatePath(Position, new Vector2(725, 275), walls);
+                pathCount = 0;
+            }
         }
 
         protected override void Reset(float pSeconds)
         {
-            throw new NotImplementedException();
+            if (pathFinding.Path[pathCount] == Position)
+            {
+                pathCount++;
+                if (pathCount == pathFinding.Path.Length)
+                {
+                    state = States.House;
+                    pathCount = 0;
+                    startTime = pSeconds;
+                    return;
+                }
+            }
+
+            Vector2 direction = pathFinding.Path[pathCount] - Position;
+            direction.Normalize();
+
+            Position += direction * (speed * 2);
         }
     }
 
     internal class Clyde : Ghost
     {
-        public Clyde(Vector2 pPosition, Color pBackgroundColour, List<Wall> pWalls) : base(pPosition, pBackgroundColour, pWalls)
+        Pacman pacman;
+        bool isStart;
+
+        public Clyde(Vector2 pPosition, Color pBackgroundColour, Pacman pPacman, List<Wall> pWalls) : base(pPosition, pBackgroundColour, pWalls)
         {
             Name = "Clyde";
             colour = Color.Orange;
+            pacman = pPacman;
+            isStart = true;
         }
 
         protected override void Chase(float pSeconds, Pacman pPacman)
         {
-            throw new NotImplementedException();
+            isStart = false;
+            float x = Position.X + 25;
+            float y = Position.Y + 25;
+
+            if (x % 50 == 0 && y % 50 == 0)
+            {
+                if((pPacman.ClosestNodePosition - Position).Length() < 400)
+                {
+                    state = States.ToCorner;
+                    startTime = pSeconds;
+                    pathFinding.CreatePath(Position, new Vector2(225, 275), walls);
+                }
+                pathFinding.CreatePath(Position, pPacman.ClosestNodePosition, walls);
+            }
+
+            Vector2 direction = pathFinding.Path[1] - Position;
+            direction.Normalize();
+
+            Position += direction * speed;
         }
 
         protected override void Corner(float pSeconds)
         {
-            throw new NotImplementedException();
+            Vector2[] corrnerPath = new Vector2[8]
+            {
+                new Vector2(225, 275),
+                new Vector2(325, 275),
+                new Vector2(325, 175),
+                new Vector2(425, 175),
+                new Vector2(425, 75),
+                new Vector2(75, 75),
+                new Vector2(75, 175),
+                new Vector2(225, 175),
+            };
+
+            if ((pacman.ClosestNodePosition - Position).Length() > 400 && !isStart)
+            {
+                state = States.Chase;
+                return;
+            }
+
+            if (startTime + 7 <= pSeconds && (Position.X + 25) % 50 == 0 && (Position.Y + 25) % 50 == 0)
+            {
+                state = States.Chase;
+                startTime = pSeconds;
+                return;
+            }
+
+            if (corrnerPath[pathCount] == Position)
+            {
+                pathCount++;
+                if (pathCount == 8) pathCount = 0;
+            }
+
+            Vector2 direction = corrnerPath[pathCount] - Position;
+            direction.Normalize();
+
+            Position += direction * speed;
         }
 
         protected override void Escape(float pSeconds, Pacman pPacman)
@@ -348,12 +508,28 @@ namespace Pacman
 
         protected override void House(float pSeconds)
         {
-            if(startTime + 8 >= pSeconds) state = States.ToCorner;
+            if (startTime + 8 <= pSeconds)
+            {
+                state = States.ToCorner;
+                pathFinding.CreatePath(Position, new Vector2(225, 275), walls);
+                pathCount = 0;
+            }
         }
 
         protected override void Reset(float pSeconds)
         {
             throw new NotImplementedException();
+        }
+
+        protected override void ToCorner(float pSeconds)
+        {
+            if ((pacman.ClosestNodePosition - Position).Length() > 400 && !isStart)
+            {
+                state = States.Chase;
+                return;
+            }
+
+            base.ToCorner(pSeconds);
         }
     }
 }

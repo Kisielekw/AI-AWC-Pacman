@@ -12,6 +12,7 @@ namespace Pacman
 {
     internal class Pacman
     {
+        public bool IsAlive;
         public Vector2 Position { get; private set; }
         public Vector2 ClosestNodePosition
         {
@@ -45,15 +46,16 @@ namespace Pacman
             }
         }
         public Vector2 direction { get; private set; }
-       
-        private float speed;
 
+        private bool powerUp;
         private KeyboardState oldState;
 
         public Pacman(Vector2 pPosition)
         {
             Position = pPosition;
             direction = Vector2.Zero;
+            IsAlive = true;
+            powerUp = false;
         }
 
         public void Draw(ShapeBatcher pShapeBatcher)
@@ -61,7 +63,7 @@ namespace Pacman
             pShapeBatcher.DrawCircle(Position, 25, 16, Color.Gold);
         }
 
-        public void Update(List<Wall> pWalls)
+        public void Update(List<Wall> pWalls, Ghost[] pGhosts)
         {
             KeyboardState state = Keyboard.GetState();
 
@@ -94,7 +96,21 @@ namespace Pacman
                 Position += direction * 2.5f;
             }
 
+            if (CheckHit(pGhosts))
+            {
+                if (!powerUp) IsAlive = false;
+            }
+
             oldState = Keyboard.GetState();
+        }
+
+        private bool CheckHit(Ghost[] ghosts)
+        {
+            foreach(Ghost ghost in ghosts)
+            {
+                if ((ghost.Position - Position).Length() < 49) return true;
+            }
+            return false;
         }
     }
 }

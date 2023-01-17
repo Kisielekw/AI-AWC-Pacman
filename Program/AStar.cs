@@ -44,7 +44,7 @@ namespace Pacman
 
         public void CreatePath(Vector2 pFrom, Vector2 pTo, List<Wall> pWalls)
         {
-            if(!CheckCorectValues(pFrom, pTo))
+            if(!CheckCorectValues(pFrom, pTo, pWalls))
             {
                 throw new Exception("Values entered are invalid");
             }
@@ -109,7 +109,7 @@ namespace Pacman
             }
         }
 
-        public static bool CheckCorectValues(Vector2 pFrom, Vector2 pTo)
+        public static bool CheckCorectValues(Vector2 pFrom, Vector2 pTo, List<Wall> pWalls)
         {
             if(pFrom.X > 925 || pFrom.X < 25 || pTo.X > 875 || pTo.X < 75) return false;
             if (pFrom.Y > 875 || pFrom.Y < 75 || pTo.Y > 875 || pTo.Y < 75) return false;
@@ -121,6 +121,11 @@ namespace Pacman
             x = (int)pTo.X + 25;
             y = (int)pTo.Y + 25;
             if (x % 50 != 0 || y % 50 != 0) return false;
+
+            foreach(Wall wall in pWalls)
+            {
+                if(wall.Position == pTo) return false;
+            }
 
             return true;
         }
