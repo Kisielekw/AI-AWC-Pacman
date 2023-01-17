@@ -67,9 +67,9 @@ namespace Pacman
             float seccondsElapst = (float)gameTime.TotalGameTime.TotalSeconds;
             if (Pacman.IsAlive)
             {
-                //Blinky.Update(Pacman, seccondsElapst);
-                //Pinky.Update(Pacman, seccondsElapst);
-                //Inky.Update(Pacman, seccondsElapst);
+                Blinky.Update(Pacman, seccondsElapst);
+                Pinky.Update(Pacman, seccondsElapst);
+                Inky.Update(Pacman, seccondsElapst);
                 Clyde.Update(Pacman, seccondsElapst);
                 Pacman.Update(walls, new Ghost[] {Blinky, Pinky, Inky, Clyde});
             }
