@@ -106,6 +106,7 @@ namespace Pacman
 
         public void DrawRectangle(Vector2 pPosition, bool pCentred, float pHeight, float pWidth, Color pColour)
         {
+            EnsureStarted();
             EnsureSpace(4, 6);
 
             Vector3 vecA = new Vector3(pPosition, 0);
@@ -143,6 +144,7 @@ namespace Pacman
 
         public void DrawCircle(Vector2 pPosition, float pRadius, int pSides, Color pColour)
         {
+            EnsureStarted();
             EnsureSpace(1 + 2 * pSides, 3 * pSides);
 
             float deltaAngle = MathF.PI * 2 / pSides;
@@ -166,6 +168,34 @@ namespace Pacman
             }
 
             ShapeCount += pSides;
+        }
+
+        //Function doesnt work
+        public void DrawEquTriangle(Vector2 pPosition, float pSize, float pRotation, Color pColour)
+        {
+            EnsureStarted();
+            EnsureSpace(3, 3);
+
+            Vector2 aVec = Vector2.Zero;
+            Vector2 bVec = new Vector2(pSize, 0);
+            Vector2 cVec = new Vector2(pSize / 2f, MathF.Sqrt(MathF.Pow(pSize, 2) - MathF.Pow(pSize / 2f, 2)));
+
+            bVec = bVec.Rotate(pRotation);
+            cVec = cVec.Rotate(pRotation);
+
+            VertexPositionColor a = new VertexPositionColor(new Vector3(aVec + pPosition, 0), pColour);
+            VertexPositionColor b = new VertexPositionColor(new Vector3(bVec + pPosition, 0), pColour);
+            VertexPositionColor c = new VertexPositionColor(new Vector3(cVec + pPosition, 0), pColour);
+
+            indexList[IndexCount++] = 0 + VertexCount;
+            indexList[IndexCount++] = 1 + VertexCount;
+            indexList[IndexCount++] = 2 + VertexCount;
+
+            vertexList[VertexCount++] = a;
+            vertexList[VertexCount++] = b;
+            vertexList[VertexCount++] = c;
+
+            ShapeCount++;
         }
     }
 }
