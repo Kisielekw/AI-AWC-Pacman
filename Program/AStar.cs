@@ -1,131 +1,151 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.Pkcs;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Pacman
 {
+    class NodePath : IComparable<NodePath>
+    {
+        public NodePath LastNode { get; private set; }
+        public Vector2 Position { get; private set; }
+        public int StepsToNode { get; private set; }
+
+        private float heuristic;
+
+        public NodePath(Vector2 pPosition, int pSteps, float pHeuristic, NodePath pLastNode = null)
+        {
+            Position = pPosition;
+            LastNode = pLastNode;
+            StepsToNode = pSteps;
+            heuristic = pHeuristic;
+        }
+
+        public int CompareTo(NodePath other)
+        {
+            float score = StepsToNode + heuristic;
+            float otherScore = other.StepsToNode + other.heuristic;
+
+            if (otherScore > score) return -1;
+            else if (otherScore < score) return 1;
+            else return 0;
+        }
+    }
+
     internal class AStar
     {
-        internal class NodeInfo : IComparable<NodeInfo>
+        public Vector2[] Path 
         {
-            public float Heuristic { get; private set; }
-            public float LowestCostToNode { get; set; }
-            public int ID { get; private set; }
-
-            public NodeInfo(int pID, float pHeuristic, float pCostToNode)
-            {
-                ID = pID;
-                Heuristic = pHeuristic;
-                LowestCostToNode = pCostToNode;
-            }
-
-            public int CompareTo(NodeInfo other)
-            {
-                if (this.Heuristic + this.LowestCostToNode > other.Heuristic + other.LowestCostToNode) return -1;
-                else if (this.Heuristic + this.LowestCostToNode < other.Heuristic + other.LowestCostToNode) return 1;
-                return 0;
-            }
+            get;
+            private set;
         }
 
-        private List<NodeInfo> visitedNodes;
-        private List<NodeInfo> nodeQueue;
-        private List<Edge> shortestPathTree;
-
-        private Graph graph;
-        
-        public int From { get; private set; }
-        public int To { get; private set; }
-        public bool isFinished { get; private set; }
-        public List<Edge> ShortestPath { get { return shortestPathTree; } }
-
-        public AStar(Graph pGraph, int pFrom, int pTo)
+        public void CreatePath(Vector2 pFrom, Vector2 pTo, List<Wall> pWalls)
         {
-            graph = pGraph;
-            From = pFrom;
-            To = pTo;
-
-            visitedNodes = new List<NodeInfo>(graph.NodeCount);
-            nodeQueue = new List<NodeInfo>(graph.NodeCount);
-            float distanceToFinish = (graph.GetNode(pFrom).Position - graph.GetNode(pTo).Position).Length();
-            nodeQueue.Add(new NodeInfo(From, 0, distanceToFinish));
-            shortestPathTree = new List<Edge>();
-
-            isFinished = false;
-
-            FindPath();
-        }
-
-        private void FindPath()
-        {
-            while (!isFinished)
+            if(!CheckCorectValues(pFrom, pTo, pWalls))
             {
-                nodeQueue.Sort();
-                NodeInfo currentNode = nodeQueue[nodeQueue.Count - 1];
-                nodeQueue.RemoveAt(nodeQueue.Count - 1);
+                throw new Exception("Values entered are invalid");
+            }
 
-                if(currentNode.ID == To)
+            if(pFrom == pTo)
+            {
+                Path = new Vector2[1] { pTo };
+                return;
+            }
+
+            bool isFinished = false;
+            List<NodePath> queue = new List<NodePath>();
+            List<Vector2> visitedNodes = new List<Vector2>();
+
+            float length = (pTo - pFrom).Length(); 
+            queue.Add(new NodePath(pFrom, 0, length));
+
+            while(!isFinished)
+            {
+                queue.Sort();
+                NodePath currentNode = queue[0];
+                queue.RemoveAt(0);
+
+                if(currentNode.Position == pTo)
                 {
-                    visitedNodes.Add(currentNode);
+                    CreatePath(currentNode);
                     isFinished = true;
+                    continue;
                 }
 
-                SearchEdges(currentNode);
-            }
-        }
-
-        private void SearchEdges(NodeInfo pCurrentNode)
-        {
-            foreach(Edge edge in graph.Edges)
-            {
-                int candidateID = -1;
-
-                if(edge.FromID == pCurrentNode.ID) candidateID = edge.ToID;
-                else if(edge.ToID == pCurrentNode.ID) candidateID = edge.FromID;
-
-                if(candidateID > 0)
+                List<Vector2> potentialNodes = new List<Vector2>(4)
                 {
-                    bool visited = isVisited(candidateID);
+                    currentNode.Position + new Vector2(50, 0),
+                    currentNode.Position + new Vector2(-50, 0),
+                    currentNode.Position + new Vector2(0, 50),
+                    currentNode.Position + new Vector2(0, -50)
+                };
 
-                    bool queued = false;
-                    for(int i = 0; i < nodeQueue.Count; i++)
+                foreach(Vector2 visited in visitedNodes)
+                {
+                    if (potentialNodes.Contains(visited))
                     {
-                        queued = true;
-                        float newCost = pCurrentNode.LowestCostToNode + graph.GetEdgeCost(candidateID);
-                        if (nodeQueue[i].LowestCostToNode > newCost)
-                        {
-                            nodeQueue[i].LowestCostToNode = newCost;
-
-                            for(int j = 0; j < shortestPathTree.Count; j++)
-                            {
-                                if (shortestPathTree[j].ToID == candidateID)
-                                {
-                                    shortestPathTree.RemoveAt(j);
-                                    shortestPathTree.Add(new Edge(pCurrentNode.ID, candidateID));
-                                }
-                            }
-                        }
-                    }
-
-                    if(!visited && !queued) 
-                    {
-                        float distanceToGoal = (graph.GetNode(candidateID).Position - graph.GetNode(To).Position).Length();
-                        nodeQueue.Add(new NodeInfo(candidateID, graph.GetEdgeCost(edge.ID), distanceToGoal));
-                        shortestPathTree.Add(new Edge(pCurrentNode.ID, candidateID));
+                        potentialNodes.Remove(visited);
                     }
                 }
-            }
 
-            visitedNodes.Add(pCurrentNode);
+                foreach(Wall wall in pWalls)
+                {
+                    if (potentialNodes.Contains(wall.Position))
+                    {
+                        potentialNodes.Remove(wall.Position);
+                    }
+                }
+
+                foreach(Vector2 newPos in potentialNodes)
+                {
+                    length = (pTo - newPos).Length();
+                    queue.Add(new NodePath(newPos, currentNode.StepsToNode + 1, length, currentNode));
+                }
+
+                visitedNodes.Add(currentNode.Position);
+            }
         }
 
-        private bool isVisited(int pID)
+        public static bool CheckCorectValues(Vector2 pFrom, Vector2 pTo, List<Wall> pWalls)
         {
-            foreach (NodeInfo Node in visitedNodes)
+            if(pFrom.X > 925 || pFrom.X < 25 || pTo.X > 875 || pTo.X < 75) return false;
+            if (pFrom.Y > 875 || pFrom.Y < 75 || pTo.Y > 875 || pTo.Y < 75) return false;
+
+            int x = (int)pFrom.X + 25;
+            int y = (int)pFrom.Y + 25;
+            if(x % 50 != 0 || y % 50 != 0) return false;
+
+            x = (int)pTo.X + 25;
+            y = (int)pTo.Y + 25;
+            if (x % 50 != 0 || y % 50 != 0) return false;
+
+            foreach(Wall wall in pWalls)
             {
-                if (Node.ID == pID) return true;
+                if(wall.Position == pTo) return false;
+            }
+
+            return true;
+        }
+
+        private void CreatePath(NodePath pNode)
+        {
+            List<Vector2> path = new List<Vector2>();
+            while (true)
+            {
+                if(pNode == null) break;
+                path.Add(pNode.Position);
+                pNode = pNode.LastNode;
+            }
+
+            Path = new Vector2[path.Count];
+            int count = 0;
+            for(int i = path.Count - 1; i >= 0; i--)
+            {
+                Path[count] = path[i];
+                count++;
             }
             return false;
         }
