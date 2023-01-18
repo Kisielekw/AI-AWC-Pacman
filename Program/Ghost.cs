@@ -337,7 +337,6 @@ namespace Pacman
     internal class Inky : Ghost
     {
         private Ghost redGhost;
-        private Vector2 temp;
 
         public Inky(Vector2 pPosition, Color pBackgroundColour, Blinky pBlinky, List<Wall> pWalls) : base(pPosition, pBackgroundColour, pWalls)
         {
@@ -345,7 +344,6 @@ namespace Pacman
             colour = Color.LightBlue;
             originalColour = colour;
             redGhost = pBlinky;
-            temp = pPosition;
         }
 
         protected override void Chase(float pSeconds, Pacman pPacman)
@@ -358,7 +356,6 @@ namespace Pacman
             target = pPacman.ClosestNodePosition + (target * 100);
             target = CenterVector(target);
             target = new Vector2(MathF.Round(target.X), MathF.Round(target.Y));
-            temp = target;
 
             if (x % 50 == 0 && y % 50 == 0)
             {
