@@ -18,6 +18,7 @@ namespace Pacman
         protected AStar pathFinding;
         protected List<Wall> walls;
         protected Color colour;
+        protected Color originalColour;
         protected Color backgroundColour;
         protected States state;
         protected float speed;
@@ -35,7 +36,7 @@ namespace Pacman
             walls = pWalls;
         }
 
-        public void Draw(ShapeBatcher pShapeBatcher)
+        public virtual void Draw(ShapeBatcher pShapeBatcher)
         {
             pShapeBatcher.DrawCircle(Position, 25, 16, colour);
             pShapeBatcher.DrawRectangle(new Vector2(0, -12.5f) + Position, true, 25, 50, colour);
@@ -75,6 +76,23 @@ namespace Pacman
             }
         }
 
+        public void SetFrightend(float pSeconds)
+        {
+            state = States.Escape;
+            startTime = pSeconds;
+            pathCount= 0;
+            colour = Color.DarkBlue;
+
+            Position = CenterVector(Position);
+        }
+        public virtual void Eaten(float pSeconds)
+        {
+            state = States.Reset;
+            startTime = pSeconds;
+            pathCount= 0;
+            colour = originalColour;
+        }
+
         abstract protected void House(float pSeconds);
         protected virtual void ToCorner(float pSeconds)
         {
@@ -96,24 +114,22 @@ namespace Pacman
         }
         abstract protected void Corner(float pSeconds);
         abstract protected void Chase(float pSeconds, Pacman pPacman);
-        abstract protected void Escape(float pSeconds, Pacman pPacman);
-        abstract protected void Reset(float pSeconds);
-    }
-
-    internal class Blinky : Ghost
-    {
-        public Blinky(Vector2 pPosition, Color pBackgroundColour, List<Wall> pWalls) : base(pPosition, pBackgroundColour, pWalls)
+        protected void Escape(float pSeconds, Pacman pPacman)
         {
-            Name = "Blinky";
-            colour = Color.Red;
+            if(startTime + 5 < pSeconds)
+            {
+                state = States.Chase;
+                pathCount = 0;
+                startTime = pSeconds;
+                colour = originalColour;
+            }
         }
-
-        protected override void Reset(float pSeconds)
+        protected void Reset(float pSeconds)
         {
             if (pathFinding.Path[pathCount] == Position)
             {
                 pathCount++;
-                if(pathCount == pathFinding.Path.Length)
+                if (pathCount == pathFinding.Path.Length)
                 {
                     state = States.House;
                     pathCount = 0;
@@ -126,6 +142,45 @@ namespace Pacman
             direction.Normalize();
 
             Position += direction * (speed * 2);
+        }
+
+        protected Vector2 CenterVector(Vector2 pInput)
+        {
+            float x = pInput.X + 25;
+            float y = pInput.Y + 25;
+
+            x = x % 50;
+            y = y % 50;
+
+            if (x >= 25)
+            {
+                x = pInput.X + (50 - x);
+            }
+            else
+            {
+                x = pInput.X - x;
+            }
+
+            if (y >= 25)
+            {
+                y = pInput.Y + (50 - y);
+            }
+            else
+            {
+                y = pInput.Y - y;
+            }
+
+            return new Vector2(x, y);
+        }
+    }
+
+    internal class Blinky : Ghost
+    {
+        public Blinky(Vector2 pPosition, Color pBackgroundColour, List<Wall> pWalls) : base(pPosition, pBackgroundColour, pWalls)
+        {
+            Name = "Blinky";
+            colour = Color.Red;
+            originalColour = colour;
         }
 
         protected override void Chase(float pSeconds, Pacman pPacman)
@@ -181,25 +236,17 @@ namespace Pacman
             Position += direction * speed;
         }
 
-        protected override void Escape(float pSeconds, Pacman pPacman)
-        {
-            if((pPacman.Position - Position).Length() >= 100 && (Position.X + 25) % 50 == 0  && (Position.Y + 25) % 50 == 0)
-            {
-                pathFinding.CreatePath(Position, new Vector2(875, 875), walls);
-            }
-            else if((Position.X + 25) % 50 == 0 && (Position.Y + 25) % 50 == 0)
-            {
-                Vector2 targetVector = Position - pPacman.Position;
-                targetVector.Normalize();
-                targetVector = (targetVector * 2) + Position;
-            }
-        }
-
         protected override void House(float pSeconds)
         {
             state = States.ToCorner;
             pathFinding.CreatePath(Position,new Vector2(875, 875), walls);
             pathCount = 0;
+        }
+
+        public override void Eaten(float pSeconds)
+        {
+            base.Eaten(pSeconds);
+            pathFinding.CreatePath(Position, new Vector2(475, 525), walls);
         }
     }
 
@@ -209,6 +256,7 @@ namespace Pacman
         {
             Name = "Pinky";
             colour = Color.Pink;
+            originalColour = colour;
         }
 
         protected override void Chase(float pSeconds, Pacman pPacman)
@@ -269,21 +317,6 @@ namespace Pacman
             Position += direction * speed;
         }
 
-        protected override void Escape(float pSeconds, Pacman pPacman)
-        {
-            if ((pPacman.Position - Position).Length() >= 100 && (Position.X + 25) % 50 == 0 && (Position.Y + 25) % 50 == 0)
-            {
-                pathFinding.CreatePath(Position, new Vector2(75, 875), walls);
-            }
-            else if ((Position.X + 25) % 50 == 0 && (Position.Y + 25) % 50 == 0)
-            {
-                Vector2 targetVector = Position - pPacman.Position;
-                targetVector.Normalize();
-                targetVector = (targetVector * 2) + Position;
-
-            }
-        }
-
         protected override void House(float pSeconds)
         {
             if (startTime + 2 <= pSeconds) 
@@ -294,36 +327,25 @@ namespace Pacman
             }
         }
 
-        protected override void Reset(float pSeconds)
+        public override void Eaten(float pSeconds)
         {
-            if (pathFinding.Path[pathCount] == Position)
-            {
-                pathCount++;
-                if (pathCount == pathFinding.Path.Length)
-                {
-                    state = States.House;
-                    pathCount = 0;
-                    startTime = pSeconds;
-                    return;
-                }
-            }
-
-            Vector2 direction = pathFinding.Path[pathCount] - Position;
-            direction.Normalize();
-
-            Position += direction * (speed * 2);
+            base.Eaten(pSeconds);
+            pathFinding.CreatePath(Position, new Vector2(475, 475), walls);
         }
     }
 
     internal class Inky : Ghost
     {
         private Ghost redGhost;
+        private Vector2 temp;
 
         public Inky(Vector2 pPosition, Color pBackgroundColour, Blinky pBlinky, List<Wall> pWalls) : base(pPosition, pBackgroundColour, pWalls)
         {
             Name = "Inky";
             colour = Color.LightBlue;
+            originalColour = colour;
             redGhost = pBlinky;
+            temp = pPosition;
         }
 
         protected override void Chase(float pSeconds, Pacman pPacman)
@@ -334,6 +356,9 @@ namespace Pacman
             Vector2 target = (pPacman.ClosestNodePosition - redGhost.Position);
             target.Normalize();
             target = pPacman.ClosestNodePosition + (target * 100);
+            target = CenterVector(target);
+            target = new Vector2(MathF.Round(target.X), MathF.Round(target.Y));
+            temp = target;
 
             if (x % 50 == 0 && y % 50 == 0)
             {
@@ -341,13 +366,13 @@ namespace Pacman
                 {
                     state = States.ToCorner;
                     startTime = pSeconds;
-                    pathFinding.CreatePath(Position, new Vector2(75, 875), walls);
+                    pathFinding.CreatePath(Position, new Vector2(725, 275), walls);
                     pathCount = 0;
                     return;
                 }
 
                 if (!AStar.CheckCorectValues(Position, target, walls)) target = pPacman.ClosestNodePosition;
-                if((pPacman.Position - Position).Length() < 100) target = pPacman.ClosestNodePosition;
+                if((pPacman.Position - Position).Length() < 150) target = pPacman.ClosestNodePosition;
                 pathFinding.CreatePath(Position, target, walls);
             }
 
@@ -390,11 +415,6 @@ namespace Pacman
             Position += direction * speed;
         }
 
-        protected override void Escape(float pSeconds, Pacman pPacman)
-        {
-            throw new NotImplementedException();
-        }
-
         protected override void House(float pSeconds)
         {
             if(startTime + 5 <= pSeconds)
@@ -404,25 +424,10 @@ namespace Pacman
                 pathCount = 0;
             }
         }
-
-        protected override void Reset(float pSeconds)
+        public override void Eaten(float pSeconds)
         {
-            if (pathFinding.Path[pathCount] == Position)
-            {
-                pathCount++;
-                if (pathCount == pathFinding.Path.Length)
-                {
-                    state = States.House;
-                    pathCount = 0;
-                    startTime = pSeconds;
-                    return;
-                }
-            }
-
-            Vector2 direction = pathFinding.Path[pathCount] - Position;
-            direction.Normalize();
-
-            Position += direction * (speed * 2);
+            base.Eaten(pSeconds);
+            pathFinding.CreatePath(Position, new Vector2(525, 475), walls);
         }
     }
 
@@ -435,6 +440,7 @@ namespace Pacman
         {
             Name = "Clyde";
             colour = Color.Orange;
+            originalColour = colour;
             pacman = pPacman;
             isStart = true;
         }
@@ -501,11 +507,6 @@ namespace Pacman
             Position += direction * speed;
         }
 
-        protected override void Escape(float pSeconds, Pacman pPacman)
-        {
-            throw new NotImplementedException();
-        }
-
         protected override void House(float pSeconds)
         {
             if (startTime + 8 <= pSeconds)
@@ -514,11 +515,6 @@ namespace Pacman
                 pathFinding.CreatePath(Position, new Vector2(225, 275), walls);
                 pathCount = 0;
             }
-        }
-
-        protected override void Reset(float pSeconds)
-        {
-            throw new NotImplementedException();
         }
 
         protected override void ToCorner(float pSeconds)
@@ -530,6 +526,12 @@ namespace Pacman
             }
 
             base.ToCorner(pSeconds);
+        }
+
+        public override void Eaten(float pSeconds)
+        {
+            base.Eaten(pSeconds);
+            pathFinding.CreatePath(Position, new Vector2(425, 475), walls);
         }
     }
 }
