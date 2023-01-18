@@ -12,6 +12,7 @@ namespace Pacman
         private ShapeBatcher _shapeBatcher;
 
         private List<Wall> walls;
+        private List<PowerUp> powerUps;
 
         private Pacman Pacman;
 
@@ -38,6 +39,9 @@ namespace Pacman
 
             walls = new List<Wall>();
             InitializeWalls();
+
+            powerUps= new List<PowerUp>();
+            InitializePowerUps();
 
             Pacman = new Pacman(new Vector2(75, 75));
             
@@ -71,7 +75,7 @@ namespace Pacman
                 Pinky.Update(Pacman, seccondsElapst);
                 Inky.Update(Pacman, seccondsElapst);
                 Clyde.Update(Pacman, seccondsElapst);
-                Pacman.Update(walls, new Ghost[] {Blinky, Pinky, Inky, Clyde});
+                Pacman.Update(walls, new Ghost[] {Blinky, Pinky, Inky, Clyde}, powerUps, seccondsElapst);
             }
             base.Update(gameTime);
         }
@@ -93,6 +97,11 @@ namespace Pacman
             foreach(Wall wall in walls)
             {
                 wall.Draw(_shapeBatcher);
+            }
+
+            foreach(PowerUp powerUp in powerUps)
+            {
+                powerUp.Draw(_shapeBatcher);
             }
 
             _shapeBatcher.End();
@@ -249,7 +258,14 @@ namespace Pacman
             walls.Add(new Wall(new Vector2(675, 725)));
         }
 
-            
-        
+        private void InitializePowerUps()
+        {
+            powerUps.Add(new PowerUp(new Vector2(75, 275)));
+            powerUps.Add(new PowerUp(new Vector2(875, 275)));
+            powerUps.Add(new PowerUp(new Vector2(75, 825)));
+            powerUps.Add(new PowerUp(new Vector2(875, 825)));
+        }
+
+
     }
 }
