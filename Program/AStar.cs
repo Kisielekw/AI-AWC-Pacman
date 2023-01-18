@@ -111,7 +111,7 @@ namespace Pacman
 
         public static bool CheckCorectValues(Vector2 pFrom, Vector2 pTo, List<Wall> pWalls)
         {
-            if(pFrom.X > 925 || pFrom.X < 25 || pTo.X > 875 || pTo.X < 75) return false;
+            if(pFrom.X > 975 || pFrom.X < -25 || pTo.X > 975 || pTo.X < -25) return false;
             if (pFrom.Y > 875 || pFrom.Y < 75 || pTo.Y > 875 || pTo.Y < 75) return false;
 
             int x = (int)pFrom.X + 25;
@@ -122,10 +122,7 @@ namespace Pacman
             y = (int)pTo.Y + 25;
             if (x % 50 != 0 || y % 50 != 0) return false;
 
-            foreach(Wall wall in pWalls)
-            {
-                if(wall.Position == pTo) return false;
-            }
+            if(pWalls.Where(x => x.Position == pTo).Count() > 0) return false;
 
             return true;
         }
@@ -147,7 +144,7 @@ namespace Pacman
                 Path[count] = path[i];
                 count++;
             }
-            return false;
+            return;
         }
     }
 }
