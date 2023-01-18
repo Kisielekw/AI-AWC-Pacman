@@ -48,6 +48,7 @@ namespace Pacman
         public Vector2 direction { get; private set; }
 
         private bool powerUp;
+        private float powerUpStart;
         private KeyboardState oldState;
 
         public Pacman(Vector2 pPosition)
@@ -63,14 +64,14 @@ namespace Pacman
             pShapeBatcher.DrawCircle(Position, 25, 16, Color.Gold);
         }
 
-        public void Update(List<Wall> pWalls, Ghost[] pGhosts)
+        public void Update(List<Wall> pWalls, Ghost[] pGhosts, List<PowerUp> pPowerUps, float pSeconds)
         {
             KeyboardState state = Keyboard.GetState();
 
-            float x = Position.X % 50;
-            float y = Position.Y % 50;
+            if (Position == new Vector2(975, 475)) Position = new Vector2(-25, 475);
+            else if (Position == new Vector2(-25, 475)) Position = new Vector2(975, 475);
 
-            if(state.IsKeyDown(Keys.W) && !oldState.IsKeyDown(Keys.W))
+            if (state.IsKeyDown(Keys.W) && !oldState.IsKeyDown(Keys.W))
             {
                 direction = new Vector2(0, 1);
                 Position = new Vector2(ClosestNodePosition.X, Position.Y);
@@ -96,21 +97,42 @@ namespace Pacman
                 Position += direction * 2.5f;
             }
 
-            if (CheckHit(pGhosts))
-            {
-                if (!powerUp) IsAlive = false;
-            }
+            CheckHit(pGhosts, pSeconds);
+            CheckPowerUps(pPowerUps, pGhosts, pSeconds);
+            if (powerUpStart + 5 <= pSeconds) powerUp = false;
 
             oldState = Keyboard.GetState();
         }
 
-        private bool CheckHit(Ghost[] ghosts)
+        private void CheckHit(Ghost[] ghosts, float pSeconds)
         {
             foreach(Ghost ghost in ghosts)
             {
-                if ((ghost.Position - Position).Length() < 49) return true;
+                if ((ghost.Position - Position).Length() < 49)
+                {
+                    if (powerUp) ghost.Eaten(pSeconds);
+                    else IsAlive = false;
+                    return;
+                }
             }
-            return false;
+        }
+
+        private void CheckPowerUps(List<PowerUp> pPowerUps, Ghost[] ghosts, float pSeconds)
+        {
+            for(int i = 0; i < pPowerUps.Count; i++)
+            {
+                if (pPowerUps[i].Position == ClosestNodePosition)
+                {
+                    pPowerUps.RemoveAt(i);
+                    powerUpStart = pSeconds;
+                    powerUp = true;
+                    foreach(Ghost ghost in ghosts)
+                    {
+                        ghost.SetFrightend(pSeconds);
+                    }
+                    return;
+                }
+            }
         }
     }
 }
